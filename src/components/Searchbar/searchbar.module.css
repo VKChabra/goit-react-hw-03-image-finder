@@ -18,6 +18,7 @@
 }
 
 .Searchbar form {
+  display: flex;
   width: 40vw;
   max-width: 500px;
   background-color: white;

@@ -1,11 +1,13 @@
+import styles from './credits.module.css';
+
 const CreditsApi = () => {
   return (
-    <div className="credits-block">
-      <p className="credits-block__text">Thx for free API</p>
-      <a href="https://pixabay.com/" className="credits">
+    <div className={styles.creditsBlock}>
+      <a href="https://pixabay.com/">
         <img
-          src="https://vkchabra.github.io/goit-js-hw-11/pixabayLogo.48384d69.svg"
+          src="https://pixabay.com/static/img/public/leaderboard_b.png"
           alt="pixabay api"
+          width="200"
         />
       </a>
     </div>

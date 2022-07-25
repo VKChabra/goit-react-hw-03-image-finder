@@ -1,11 +1,19 @@
-import { Component } from 'react';
+import styles from './imageGallery.module.css';
+import ImageGalleryItem from './ImageGalleryItem';
 
-export default class ImageGallery extends Component {
-  state = {
-    searchQuery: '',
-  };
+const ImageGallery = ({ images }) => {
+  return (
+    <ul className={styles.ImageGallery}>
+      {images.map(({ id, webformatURL, largeImageURL, tags }) => (
+        <ImageGalleryItem
+          key={id}
+          smallImgUrl={webformatURL}
+          largeImageURL={largeImageURL}
+          tags={tags}
+        />
+      ))}
+    </ul>
+  );
+};
 
-  render() {
-    return <ul className="gallery">{'Набір <li> із зображеннями'}</ul>;
-  }
-}
+export default ImageGallery;
