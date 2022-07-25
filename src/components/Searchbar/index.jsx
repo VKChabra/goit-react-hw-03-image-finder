@@ -25,13 +25,16 @@ export default class Searchbar extends Component {
     return (
       <header className={styles.Searchbar}>
         <CreditsApi />
-        <form onSubmit={this.handleSubmit}>
-          <button type="submit">
+        <form onSubmit={this.handleSubmit} className={styles.Form}>
+          <button type="submit" className={styles.Button}>
             <SearchIcon size="14" />
           </button>
           <input
+            className={styles.Input}
             type="text"
-            placeholder="Enter text here"
+            autoComplete="off"
+            autoFocus
+            placeholder="Search images and photos"
             onChange={this.handleQueryChange}
           />
         </form>

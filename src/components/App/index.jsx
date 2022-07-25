@@ -12,6 +12,7 @@ export class App extends Component {
     page: 1,
     error: null,
     status: 'idle',
+    loading: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -26,20 +27,21 @@ export class App extends Component {
     const { searchQuery, page } = this.state;
 
     try {
-      this.setState({ status: 'pending' });
+      this.setState({ loading: true });
       const { hits } = await fetchImages(searchQuery, page);
 
       if (hits.length === 0) {
-        this.setState({ status: 'rejected' });
-        // return alert('Nothing was found for your query');
-        this.setState({ error: 'Nothing was found for your query' });
-      } else {
-        this.setState(({ images }) => ({ images: [...images, ...hits] }));
-        this.setState({ status: 'resolved' });
+        this.setState({
+          status: 'rejected',
+          loading: false,
+          error: 'Nothing was found for your query, try something else',
+        });
       }
+      this.setState(({ images }) => ({ images: [...images, ...hits] }));
+      this.setState({ status: 'resolved', loading: false });
     } catch (error) {
       console.log(error);
-      this.setState({ status: 'rejected' });
+      this.setState({ status: 'rejected', loading: false, error });
     }
   };
 
@@ -54,14 +56,14 @@ export class App extends Component {
   };
 
   statusMarkups = () => {
-    const { images, status, error } = this.state;
+    const { images, status, error, loading } = this.state;
 
     if (status === 'idle') {
-      return <p>Please enter search query</p>;
-    }
-
-    if (status === 'pending') {
-      return <Loader />;
+      return (
+        <h2 style={{ display: 'flex', justifyContent: 'center' }}>
+          Please enter search query
+        </h2>
+      );
     }
 
     if (status === 'rejected') {
@@ -75,11 +77,11 @@ export class App extends Component {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            marginTop: 10 + 'px',
+            marginTop: '10px',
           }}
         >
           <ImageGallery images={images} />
-          <LoadMoreBtn loadMoreClick={this.loadMore} />
+          {!loading && <LoadMoreBtn loadMoreClick={this.loadMore} />}
         </div>
       );
     }
@@ -90,7 +92,7 @@ export class App extends Component {
       <div>
         <Searchbar onSubmit={this.handleFormSubmit} />
         {this.statusMarkups()}
-        {/* {this.state.status === 'pending' && <Loader />} */}
+        {this.state.loading && <Loader />}
       </div>
     );
   }
