@@ -36,12 +36,16 @@ export class App extends Component {
           loading: false,
           error: 'Nothing was found for your query, try something else',
         });
+      } else {
+        this.setState(({ images }) => ({ images: [...images, ...hits] }));
+        this.setState({ status: 'resolved', loading: false });
       }
-      this.setState(({ images }) => ({ images: [...images, ...hits] }));
-      this.setState({ status: 'resolved', loading: false });
     } catch (error) {
-      console.log(error);
-      this.setState({ status: 'rejected', loading: false, error });
+      this.setState({
+        status: 'rejected',
+        loading: false,
+        error: await fetchImages(searchQuery, page),
+      });
     }
   };
 
@@ -88,10 +92,11 @@ export class App extends Component {
   };
 
   render() {
+    const { handleFormSubmit, statusMarkups } = this;
     return (
       <div>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        {this.statusMarkups()}
+        <Searchbar onSubmit={handleFormSubmit} />
+        {statusMarkups()}
         {this.state.loading && <Loader />}
       </div>
     );
