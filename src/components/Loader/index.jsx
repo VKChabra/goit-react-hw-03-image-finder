@@ -1,8 +1,9 @@
 import { ThreeDots } from 'react-loader-spinner';
+import styles from './loader.module.css';
 
 const Loader = () => {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <div className={styles.Loader}>
       <ThreeDots width="100" radius="9" color="#4fa94d" />
     </div>
   );

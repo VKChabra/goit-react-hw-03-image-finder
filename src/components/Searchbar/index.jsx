@@ -1,7 +1,8 @@
 import { Component } from 'react';
-import styles from './searchbar.module.css';
-import { BsSearch as SearchIcon } from 'react-icons/bs';
 import CreditsApi from 'components/CreditsApi';
+import { BsSearch as SearchIcon } from 'react-icons/bs';
+import styles from './searchbar.module.css';
+import PropTypes from 'prop-types';
 
 export default class Searchbar extends Component {
   state = {
@@ -22,10 +23,11 @@ export default class Searchbar extends Component {
   };
 
   render() {
+    const { handleSubmit, handleQueryChange } = this;
     return (
       <header className={styles.Searchbar}>
         <CreditsApi />
-        <form onSubmit={this.handleSubmit} className={styles.Form}>
+        <form onSubmit={handleSubmit} className={styles.Form}>
           <button type="submit" className={styles.Button}>
             <SearchIcon size="14" />
           </button>
@@ -35,10 +37,14 @@ export default class Searchbar extends Component {
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
-            onChange={this.handleQueryChange}
+            onChange={handleQueryChange}
           />
         </form>
       </header>
     );
   }
 }
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};

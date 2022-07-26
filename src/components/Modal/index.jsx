@@ -1,30 +1,45 @@
+import { Component } from 'react';
 import styles from './modal.module.css';
+import PropTypes from 'prop-types';
 
-const Modal = ({ largeImageURL, tags, onClose }) => {
-  const onKeyEscape = e => {
+class Modal extends Component {
+  componentDidMount() {
+    window.addEventListener('keydown', this.onKeyEscape);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.onKeyEscape);
+  }
+
+  onKeyEscape = e => {
     if (e.code === 'Escape') {
-      onClose();
+      this.props.onClose();
     }
   };
 
-  const onClickOverlay = e => {
+  onClickOverlay = e => {
     if (e.target.tagName !== 'IMG') {
-      onClose();
+      this.props.onClose();
     }
   };
 
-  return (
-    <div
-      className={styles.Overlay}
-      onClickCapture={onClickOverlay}
-      onKeyDown={onKeyEscape}
-      tabIndex="0"
-    >
-      <div className={styles.Modal}>
-        <img src={largeImageURL} alt={tags} />
+  render() {
+    const { url, alt } = this.props;
+    const { onClickOverlay } = this;
+    return (
+      <div className={styles.Overlay} onClick={onClickOverlay}>
+        <div className={styles.Modal}>
+          <img src={url} alt={alt} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+}
+
+Modal.propTypes = {
+  url: PropTypes.string.isRequired,
+  alt: PropTypes.string,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default Modal;

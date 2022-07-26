@@ -4,6 +4,8 @@ import Searchbar from 'components/Searchbar';
 import Loader from 'components/Loader';
 import ImageGallery from 'components/ImageGallery';
 import LoadMoreBtn from 'components/Button';
+import Modal from 'components/Modal';
+import styles from './app.module.css';
 
 export class App extends Component {
   state = {
@@ -13,6 +15,8 @@ export class App extends Component {
     error: null,
     status: 'idle',
     loading: false,
+    url: null,
+    alt: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -28,7 +32,7 @@ export class App extends Component {
 
     try {
       this.setState({ loading: true });
-      const { hits } = await fetchImages(searchQuery, page);
+      const { hits, totalHits } = await fetchImages(searchQuery, page);
 
       if (hits.length === 0) {
         this.setState({
@@ -37,8 +41,12 @@ export class App extends Component {
           error: 'Nothing was found for your query, try something else',
         });
       } else {
-        this.setState(({ images }) => ({ images: [...images, ...hits] }));
-        this.setState({ status: 'resolved', loading: false });
+        this.setState(({ images }) => ({
+          images: [...images, ...hits],
+          status: 'resolved',
+          loading: false,
+          totalHits,
+        }));
       }
     } catch (error) {
       this.setState({
@@ -49,55 +57,40 @@ export class App extends Component {
     }
   };
 
+  handleFormSubmit = searchQuery => {
+    this.setState({ searchQuery, page: 1, images: [] });
+  };
+
   loadMore = () => {
     this.setState(({ page }) => ({
       page: page + 1,
     }));
   };
 
-  handleFormSubmit = searchQuery => {
-    this.setState({ searchQuery, page: 1, images: [] });
-  };
+  openModal = (url, alt) => this.setState({ url, alt });
 
-  statusMarkups = () => {
-    const { images, status, error, loading } = this.state;
-
-    if (status === 'idle') {
-      return (
-        <h2 style={{ display: 'flex', justifyContent: 'center' }}>
-          Please enter search query
-        </h2>
-      );
-    }
-
-    if (status === 'rejected') {
-      return <h1>{error}</h1>;
-    }
-
-    if (status === 'resolved') {
-      return (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginTop: '10px',
-          }}
-        >
-          <ImageGallery images={images} />
-          {!loading && <LoadMoreBtn loadMoreClick={this.loadMore} />}
-        </div>
-      );
-    }
-  };
+  closeModal = () => this.setState({ url: null, alt: null });
 
   render() {
-    const { handleFormSubmit, statusMarkups } = this;
+    const { handleFormSubmit, loadMore, openModal, closeModal } = this;
+    const { status, error, loading, images, totalHits, url, alt } = this.state;
     return (
-      <div>
+      <div className={styles.App}>
         <Searchbar onSubmit={handleFormSubmit} />
-        {statusMarkups()}
-        {this.state.loading && <Loader />}
+        {status === 'idle' && (
+          <h2 className={styles.Idle}>Please enter search query</h2>
+        )}
+        {status === 'rejected' && <h1 className={styles.Error}>{error}</h1>}
+        {status === 'resolved' && (
+          <div className={styles.Resolved}>
+            <ImageGallery images={images} onImageClick={openModal} />
+            {!loading && status === 'resolved' && images.length < totalHits && (
+              <LoadMoreBtn loadMoreClick={loadMore} />
+            )}
+            {url && <Modal url={url} alt={alt} onClose={closeModal} />}
+          </div>
+        )}
+        {loading && <Loader />}
       </div>
     );
   }

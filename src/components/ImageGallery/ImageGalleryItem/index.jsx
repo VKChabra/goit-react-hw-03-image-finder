@@ -1,20 +1,17 @@
-import { useState } from 'react';
 import styles from './imageGalleryItem.module.css';
-import Modal from 'components/Modal';
+import PropTypes from 'prop-types';
 
-const ImageGalleryItem = ({ smallImgUrl, largeImageURL, tags }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const ImageGalleryItem = ({
+  largeImageURL,
+  smallImgUrl,
+  tags,
+  onImageClick,
+}) => {
   return (
     <li
       className={styles.ImageGalleryItem}
-      onClick={() => setIsModalOpen(true)}
+      onClick={() => onImageClick(largeImageURL, tags)}
     >
-      {isModalOpen && (
-        <Modal
-          largeImageURL={largeImageURL}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
       <img
         src={smallImgUrl}
         alt={tags}
@@ -22,6 +19,13 @@ const ImageGalleryItem = ({ smallImgUrl, largeImageURL, tags }) => {
       />
     </li>
   );
+};
+
+ImageGalleryItem.propTypes = {
+  largeImageURL: PropTypes.string.isRequired,
+  smallImgUrl: PropTypes.string.isRequired,
+  tags: PropTypes.string,
+  onImageClick: PropTypes.func.isRequired,
 };
 
 export default ImageGalleryItem;
